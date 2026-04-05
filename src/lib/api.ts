@@ -15,6 +15,16 @@ api.interceptors.request.use((config) => {
 });
 
 export const getImageUrl = (path: string) => {
-  if (!path || path.trim() === "") return "/placeholder-profile.png"; // Berikan fallback ke gambar lokal di folder public
-  return `${process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:8080/uploads"}/${path}`;
+  if (!path || path.trim() === "") return "/placeholder-profile.png";
+
+  // JURUS ANTI DOUBLE URL:
+  // Jika path sudah diawali dengan http atau https, langsung kembalikan saja
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  // Jika path cuma nama file (fallback untuk dev), baru tambahkan domain
+  const baseUrl =
+    process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:8080/uploads";
+  return `${baseUrl}/${path}`;
 };
